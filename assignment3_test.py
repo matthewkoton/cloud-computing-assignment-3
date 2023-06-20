@@ -55,7 +55,7 @@ def test_post_bad_dish():
     payload = json.dumps({"name": "blah"})
     response = requests.request("POST", URL+"/dishes", headers=headers, data=payload)
 
-    assert (response.text == "-3") and (response.status_code == 404 or response.status_code == 400 or response.status_code == 422) 
+    assert (response.text.rstrip('\n') == "-3") and (response.status_code == 404 or response.status_code == 400 or response.status_code == 422) 
 
 
 ##test 5
@@ -68,7 +68,7 @@ def test_post_orange():
     payload = json.dumps({"name": "orange"})
     response = requests.request("POST", URL+"/dishes", headers=headers, data=payload)
 
-    assert (response.text == "-2" and (response.status_code == 404 or response.status_code == 400 or response.status_code == 422))
+    assert (response.text.rstrip('\n') == "-2" and (response.status_code == 404 or response.status_code == 400 or response.status_code == 422))
 
 
 ##test 6
@@ -79,7 +79,7 @@ def test_post_orange():
 
 def test_post_meal():
     headers = {"content-type":"application/json"}
-    payload = json.dumps({"name": "orange", "appetizer": 1, "main": 2, "dessert": 3})
+    payload = json.dumps({"name": "delicious", "appetizer": 1, "main": 2, "dessert": 3})
     response = requests.request("POST", URL+"/meals", headers=headers, data=payload)
 
     assert ((int(response.text) > 0) and (response.status_code == 201))
@@ -96,5 +96,19 @@ def test_get_meals():
     response = requests.request("GET", URL+"/meals", headers=headers, data=payload)
 
     num_keys = len(response.json().keys())
-    assert ((num_keys == 1) and ( 500 < response.json()["1"]["cal"] < 400) and (response.status_code == 200))
+    assert ((num_keys == 1) and ( 400 < response.json()["1"]["cal"] < 500) and (response.status_code == 200))
 
+##test 8
+##Perform a POST /meals request as in test 6 with the same meal name (and courses can be the same or different). 
+##The test is successful if (i) the code is -2
+##(same meal name as existing meal) and, and (ii) the return status code from the
+##request is 400 or 422.
+
+def test_post_same_meal():
+    headers = {"content-type":"application/json"}
+    payload = json.dumps({"name": "delicious", "appetizer": 1, "main": 2, "dessert": 3})
+    response = requests.request("POST", URL+"/meals", headers=headers, data=payload)
+
+    assert ((int(response.text) == -2) and (response.status_code == 400 or response.status_code == 422))
+
+    
