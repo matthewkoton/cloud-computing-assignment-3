@@ -32,7 +32,11 @@ def test_post_3_dishes():
 ##and (ii) the return status code from the request is 200.
 
 def test_get_dishes_on_id():
-    pass
+    headers = {"content-type":"application/json"}
+    payload = json.dumps({})
+    response = requests.request("GET", URL+"/dishes/" + "1", headers=headers, data=payload)
+
+    assert (0.9 < response.json()["sodium"] < 1.1)
 
 ##test3
 ##Execute a GET /dishes request. The test is successful if (i) the returned JSON object has 3 embedded JSON objects (dishes), 
