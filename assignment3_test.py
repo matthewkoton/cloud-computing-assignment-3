@@ -2,7 +2,7 @@ import requests
 import json
 
 
-URL = "localhost:8000"
+URL = "http://127.0.0.1:8000"
 
 
 ##test 1 
