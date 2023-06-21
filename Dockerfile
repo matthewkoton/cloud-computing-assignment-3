@@ -5,4 +5,4 @@ RUN pip install flask
 RUN pip install flask_restful
 RUN pip install requests
 EXPOSE 8000
-CMD ["python3", "assignment1.py"]
+CMD ["python3", "assignment3.py"]
