@@ -11,9 +11,9 @@ while IFS= read -r name; do
 
     echo "${response}"
 
-    cal="${response}"| jq -r '.cal'
-    sodium="${response}"| jq -r '.sodium'
-    sugar="${response}"| jq -r '.sugar'
+    cal=$(echo "$response" | jq -r '.cal')
+    sodium=$(echo "$response" | jq -r '.sodium')
+    sugar=$(echo "$response" | jq -r '.sugar')
 
     echo "${name} contains (${cal}) calories, (${sodium}) mgs of sodium and (${sugar}) grams of sugar" >> mypath/response
     
