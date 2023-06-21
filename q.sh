@@ -9,6 +9,8 @@ while IFS= read -r name; do
     curl --location --request POST "http://127.0.0.1:8000/dishes" -H 'Content-Type: application/json' -d '{"name":"'${name}'"}'
     response = $(curl --location --request GET "http://127.0.0.1:8000/dishes/${counter}")
 
+    echo "${response}"
+
     cal = "${response}"| jq -r '.cal'
     sodium = "${response}"| jq -r '.sodium'
     sugar = "${response}"| jq -r '.sugar'
