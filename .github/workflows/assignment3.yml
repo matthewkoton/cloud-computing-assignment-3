@@ -105,6 +105,7 @@ jobs:
     - 
       name: curl
       run: |
+        touch mypath/response.txt
         cd b
         chmod +x q.sh
         bash q.sh
