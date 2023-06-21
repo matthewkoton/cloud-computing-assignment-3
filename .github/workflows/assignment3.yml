@@ -97,12 +97,13 @@ jobs:
       name: Check container is running
       run: docker ps
     - 
+      name: Checkout
+      uses: actions/checkout@v3
+    - 
       name: create directory
       run: mkdir -p mypath
     - 
       name: curl
       run: |
-        curl --location --request POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' -d '{"name":"chips"}' >> mypath/response.txt
-        curl --location --request GET 'http://127.0.0.1:8000/dishes/1' >> mypath/response.txt
-        echo "#################"
-        cat mypath/response.txt
+         chmod +x ./query.sh
+         ./query.sh
