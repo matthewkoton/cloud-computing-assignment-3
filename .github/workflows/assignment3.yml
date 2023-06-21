@@ -103,6 +103,9 @@ jobs:
       name: create directory and file
       run: 
         mkdir -p mypath
+    -
+      name: download jq
+      run: sudo apt-get install jq
     - 
       name: curl
       run: |
