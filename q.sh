@@ -7,7 +7,7 @@ while IFS= read -r name; do
     echo $name
 
     curl --location --request POST "http://127.0.0.1:8000/dishes" -H 'Content-Type: application/json' -d '{"name":"'${name}'"}'
-    response = curl --location --request GET "http://127.0.0.1:8000/dishes/${counter}" >> mypath/response
+    response = curl --location --request GET "http://127.0.0.1:8000/dishes/${counter}"
 
     echo $response
 
