@@ -1,6 +1,6 @@
 FROM python:alpine3.17
 WORKDIR ./app
-COPY assignment1.py .
+COPY assignment3.py .
 RUN pip install flask
 RUN pip install flask_restful
 RUN pip install requests
