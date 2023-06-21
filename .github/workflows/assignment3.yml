@@ -99,7 +99,8 @@ jobs:
     - 
       name: create directory
       run: mkdir -p mypath
-    - name: curl
+    - 
+      name: curl
       run: |
-        curl --location --request POST http://127.0.0.1:8000 -H 'Content-Type: application/json' -d '{"name":"chips"}' > mypath/response.txt
+        curl --location --request POST http://127.0.0.1:8000/dishes -H 'Content-Type: application/json' -d '{"name":"chips"}' > mypath/response.txt
         cat mypath/response.txt
