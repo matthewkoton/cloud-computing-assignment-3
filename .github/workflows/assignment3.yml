@@ -14,17 +14,22 @@ jobs:
     - 
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+    - 
+      name: Build and export
+      uses: docker/build-push-action@v3
       with:
         context: .
-        tags: myimage:latest
-        outputs: type=docker,dest=/tmp/myimage.tar
+
+        tags: mysvr:latest
+        outputs: type=docker,dest=/tmp/image.tar
+
 
     -
       name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: mysvr
-        path: /tmp/myimage.tar
+        path: /tmp/image.tar
   
 
   test:
