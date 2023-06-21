@@ -21,5 +21,5 @@ while IFS= read -r name; do
 
 done < queries.txt
 
-echo "#########"
+echo "#######"
 cat mypath/response
