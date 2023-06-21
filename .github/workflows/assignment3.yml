@@ -107,4 +107,4 @@ jobs:
       run: |
         cd b
         chmod +x q.sh
-        bash qs.sh
+        bash q.sh
