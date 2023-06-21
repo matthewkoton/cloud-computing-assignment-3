@@ -19,7 +19,6 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: .
-
         tags: mysvr:latest
         outputs: type=docker,dest=/tmp/image.tar
 
@@ -44,12 +43,12 @@ jobs:
       name: Load Docker images from previous workflows
       run: docker load --input mysvr/image.tar
     - 
-      name: check wordsvr image is loaded
+      name: check mysvr image is loaded
       run: docker image ls
 
     - 
       name: run image in container
-      run: docker run -p8000:8000 myimage &
+      run: docker run -p8000:8000 mysvr &
     - 
       name: Check container is running
       run: docker ps
