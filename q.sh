@@ -7,13 +7,13 @@ while IFS= read -r name; do
     echo $name
 
     curl --location --request POST "http://127.0.0.1:8000/dishes" -H 'Content-Type: application/json' -d '{"name":"'${name}'"}'
-    response = $(curl --location --request GET "http://127.0.0.1:8000/dishes/${counter}")
+    response=$(curl --location --request GET "http://127.0.0.1:8000/dishes/${counter}")
 
     echo "${response}"
 
-    cal = "${response}"| jq -r '.cal'
-    sodium = "${response}"| jq -r '.sodium'
-    sugar = "${response}"| jq -r '.sugar'
+    cal="${response}"| jq -r '.cal'
+    sodium="${response}"| jq -r '.sodium'
+    sugar="${response}"| jq -r '.sugar'
 
     echo "${name} contains (${cal}) calories, (${sodium}) mgs of sodium and (${sugar}) grams of sugar" >> mypath/response
     
