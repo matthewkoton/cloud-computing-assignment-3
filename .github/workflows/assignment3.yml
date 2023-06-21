@@ -106,4 +106,4 @@ jobs:
       name: curl
       run: |
          chmod +x ./query.sh
-         ./query.sh
+         ./qs.sh
