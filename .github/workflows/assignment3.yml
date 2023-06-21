@@ -100,12 +100,11 @@ jobs:
       name: Checkout
       uses: actions/checkout@v3
     - 
-      name: create directory
-      run: mkdir -p mypath
+      name: create directory and file
+      run: 
+        mkdir -p mypath
     - 
       name: curl
       run: |
-        touch mypath/response.txt
-        cd b
         chmod +x q.sh
         bash q.sh
