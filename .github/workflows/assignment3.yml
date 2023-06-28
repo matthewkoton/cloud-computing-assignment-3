@@ -36,7 +36,7 @@ jobs:
       run: echo Image successfully built >> logpath/log.txt
 
     - name: Update log based on build status failure
-      if: steps.docker_build.outcome == 'failure'
+      if: always() && steps.docker_build.outcome == 'failure'
       run: echo Image not successfully built >> logpath/log.txt
 
     - name: Upload log file
@@ -82,7 +82,7 @@ jobs:
       run: echo Container up and running >> logs/log.txt
       
     - name: Update log based on build status failure
-      if: steps.docker_run_container.outcome == 'faulure'
+      if: always() && steps.docker_run_container.outcome == 'faulure'
       run: echo Container failed to run >> logs/log.txt
     
     - 
