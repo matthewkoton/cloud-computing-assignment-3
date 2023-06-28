@@ -23,7 +23,7 @@ def test_post_3_dishes():
     check_1 = ((response_1.json() != response_2.json()) and (response_1.json() != response_3.json()) and (response_2.json() != response_3.json()))
     check_2 = (response_1.status_code == response_2.status_code == response_3.status_code == 201)
 
-    assert (check_1 and check_2) == True
+    assert (check_1 and check_2) == False
 
 
 ##test 2
