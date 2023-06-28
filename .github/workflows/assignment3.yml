@@ -75,7 +75,7 @@ jobs:
 
     - name: Update log based on build status success
       if: steps.docker_run_container.outcome == 'success'
-      run: echo Container up and running >> logpath/log.txt
+      run: echo Container up and running >> logs/log.txt
 
     - name: Update log based on build status failure
       if: steps.docker_run_container.outcome == 'faulure'
