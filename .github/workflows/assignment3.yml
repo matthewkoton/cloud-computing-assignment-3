@@ -113,3 +113,13 @@ jobs:
       run: |
         chmod +x q.sh
         bash q.sh
+    - 
+      name: upload test results
+      if: always()  
+      uses: actions/upload-artifact@v3
+      with:
+          name: GH_curl_results
+          path: mypath/response
+
+
+
