@@ -104,6 +104,7 @@ jobs:
         cd pytest-code
         pytest -v assignment3_test.py > test_results.txt
         cat test_results.txt
+        cd ..
 
     - 
       name: Update log based on tests success
