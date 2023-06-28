@@ -17,7 +17,7 @@ jobs:
     - 
       name: log time
       run: |
-        echo date -Iminutes >> logpath/log.txt
+        echo "$(date -Iminutes)" >> logpath/log.txt
         echo matthew koton >> logpath/log.txt
     - 
       name: Set up Docker Buildx
