@@ -31,13 +31,13 @@ jobs:
         tags: mysvr:latest
         outputs: type=docker,dest=/tmp/image.tar
 
-    - name: Update log based on build status
-      run: |
-        if [ "${{ steps.docker_build.outputs.result }}" == "success" ]; then
-          echo "Image successfully built" >> logpath/log.txt
-        else
-          echo "Not successfully built" >> logpath/log.txt
-        fi
+    - name: Update log based on build status success
+      if: steps.docker_build.outcome == 'success'
+      run: echo "Image successfully built" >> logpath/log.txt
+
+    - name: Update log based on build status failure
+      if: steps.docker_build.outcome == 'failure'
+      run: echo "Image not successfully built" >> logpath/log.txt
 
     - name: Upload log file
       uses: actions/upload-artifact@v3
