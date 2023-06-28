@@ -70,7 +70,23 @@ jobs:
       run: docker image ls
     - 
       name: run image in container
+      id: docker_run_container
       run: docker run -p8000:8000 mysvr &
+
+    - name: Update log based on build status success
+      if: steps.docker_run_container.outcome == 'success'
+      run: echo “Container up and running” >> logs/log.txt
+
+    - name: Update log based on build status failure
+      if: steps.docker_run_container.outcome == 'faulure'
+      run: echo “Container failed to run” >> logs/log.txt
+
+    - name: Upload log file
+      uses: actions/upload-artifact@v3
+      with:
+        name: logs
+        path: logpath/log.txt
+    
     - 
       name: Check container is running
       run: docker ps
