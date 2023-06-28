@@ -33,11 +33,11 @@ jobs:
 
     - name: Update log based on build status success
       if: steps.docker_build.outcome == 'success'
-      run: echo "Image successfully built" >> logpath/log.txt
+      run: echo Image successfully built >> logpath/log.txt
 
     - name: Update log based on build status failure
       if: steps.docker_build.outcome == 'failure'
-      run: echo "Image not successfully built" >> logpath/log.txt
+      run: echo Image not successfully built >> logpath/log.txt
 
     - name: Upload log file
       uses: actions/upload-artifact@v3
@@ -75,17 +75,11 @@ jobs:
 
     - name: Update log based on build status success
       if: steps.docker_run_container.outcome == 'success'
-      run: echo “Container up and running” >> logs/log.txt
+      run: echo Container up and running >> logs/log.txt
 
     - name: Update log based on build status failure
       if: steps.docker_run_container.outcome == 'faulure'
-      run: echo “Container failed to run” >> logs/log.txt
-
-    - name: Upload log file
-      uses: actions/upload-artifact@v3
-      with:
-        name: logs
-        path: logs/log.txt
+      run: echo Container failed to run >> logs/log.txt
     
     - 
       name: Check container is running
@@ -104,10 +98,20 @@ jobs:
         pip install requests
     - 
       name: Test with pytest 
+      id: tests
       run: |
         cd pytest-code
         pytest -v assignment3_test.py > test_results.txt
         cat test_results.txt
+
+    - 
+      name: Update log based on tests success
+      if: steps.tests.outcome == 'success'
+      run: echo tests succeeded >> logs/log.txt
+    - 
+      name: Update log based on tests failure
+      if: steps.tests.outcome == 'failure'
+      run: echo tests failed >> logs/log.txt
     - 
       name: upload test results
       if: always()  
@@ -115,6 +119,14 @@ jobs:
       with:
           name: GH_test_results
           path: pytest-code/test_results.txt
+
+    - 
+      name: Upload log file
+      if: always()  
+      uses: actions/upload-artifact@v3
+      with:
+        name: logs
+        path: logs/log.txt
 
   query:
     if: success()
