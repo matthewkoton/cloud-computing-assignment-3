@@ -9,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - 
+      name: log time
+      run: date -Iminutes
+    
+    - 
       name: Checkout
       uses: actions/checkout@v3
     - 
