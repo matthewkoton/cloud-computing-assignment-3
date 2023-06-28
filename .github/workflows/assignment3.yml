@@ -8,10 +8,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    -
+      name: make log file
+      run: mkdir -p logpath
     - 
       name: log time
-      run: date -Iminutes
-    
+      run: |
+        echo date -Iminutes >> logpath/log.txt
+        echo matthew koton >> logpath/log.txt
     - 
       name: Checkout
       uses: actions/checkout@v3
@@ -20,12 +24,26 @@ jobs:
       uses: docker/setup-buildx-action@v2
     - 
       name: Build and export
+      id: docker_build
       uses: docker/build-push-action@v3
       with:
         context: .
         tags: mysvr:latest
         outputs: type=docker,dest=/tmp/image.tar
 
+    - name: Update log based on build status
+      run: |
+        if [ "${{ steps.docker_build.outputs.result }}" == "success" ]; then
+          echo "Image successfully built" >> logpath/log.txt
+        else
+          echo "Not successfully built" >> logpath/log.txt
+        fi
+
+    - name: Upload log file
+      uses: actions/upload-artifact@v3
+      with:
+        name: logs
+        path: logpath/log.txt
 
     -
       name: Upload artifact
