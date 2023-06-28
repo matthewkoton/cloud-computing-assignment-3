@@ -62,6 +62,15 @@ jobs:
     - 
       name: Download artifact
       uses: actions/download-artifact@v3
+      with:
+        name: logs
+        path: logs
+    -
+      name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: mysvr
+        path: mysvr
     - 
       name: Load Docker images from previous workflows
       run: docker load --input mysvr/image.tar
@@ -75,11 +84,11 @@ jobs:
 
     - name: Update log based on build status success
       if: steps.docker_run_container.outcome == 'success'
-      run: echo Container up and running >> logs/log.txt
+      run: echo Container up and running >> logs
 
     - name: Update log based on build status failure
       if: steps.docker_run_container.outcome == 'faulure'
-      run: echo Container failed to run >> logs/log.txt
+      run: echo Container failed to run >> logs
     
     - 
       name: Check container is running
@@ -107,11 +116,11 @@ jobs:
     - 
       name: Update log based on tests success
       if: steps.tests.outcome == 'success'
-      run: echo tests succeeded >> logs/log.txt
+      run: echo tests succeeded >> logs
     - 
       name: Update log based on tests failure
       if: steps.tests.outcome == 'failure'
-      run: echo tests failed >> logs/log.txt
+      run: echo tests failed >> logs
     - 
       name: upload test results
       if: always()  
@@ -126,7 +135,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: logs
-        path: logs/log.txt
+        path: logs
 
   query:
     if: success()
