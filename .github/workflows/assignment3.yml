@@ -80,7 +80,7 @@ jobs:
     - name: Update log based on build status success
       if: steps.docker_run_container.outcome == 'success'
       run: echo Container up and running >> logs/log.txt
-
+      
     - name: Update log based on build status failure
       if: steps.docker_run_container.outcome == 'faulure'
       run: echo Container failed to run >> logs/log.txt
@@ -113,7 +113,7 @@ jobs:
       run: echo tests succeeded >> logs/log.txt
     - 
       name: Update log based on tests failure
-      if: steps.tests.outcome == 'failure'
+      if: always() && steps.tests.outcome == 'failure'
       run: echo tests failed >> logs/log.txt
     - 
       name: upload test results
