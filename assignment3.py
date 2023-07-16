@@ -129,6 +129,7 @@ class meals_collection():
         sodium = sum([dishes_col.dishes[starter_ID].dish_json["sodium"] ,dishes_col.dishes[main_ID].dish_json["sodium"], dishes_col.dishes[dessert_ID].dish_json["sodium"]])
         sugar = sum([dishes_col.dishes[starter_ID].dish_json["sugar"] ,dishes_col.dishes[main_ID].dish_json["sugar"], dishes_col.dishes[dessert_ID].dish_json["sugar"]])
         self.meals[self.id_num] = {"name" : meal_name,
+                        "ID": self.id_num,
                         "appetizer" : starter_ID,
                         "main" : main_ID,
                         "dessert" : dessert_ID, 
@@ -174,10 +175,23 @@ class meals_collection():
         if (not ((starter_ID in dishes_IDs) and (main_ID in dishes_IDs) and (dessert_ID in dishes_IDs)) or ((meal_id not in self.meals.keys()))):
             return -5, 422
         else:
+            #self.meals[meal_id] = {"name" : meal_name,            
+            #                "appetizer" : starter_ID,
+            #                "main" : main_ID,
+            #                "dessert" : dessert_ID
+            #                }
+            #return meal_id, 200
+            cal = sum([dishes_col.dishes[starter_ID].dish_json["cal"] ,dishes_col.dishes[main_ID].dish_json["cal"], dishes_col.dishes[dessert_ID].dish_json["cal"]])
+            sodium = sum([dishes_col.dishes[starter_ID].dish_json["sodium"] ,dishes_col.dishes[main_ID].dish_json["sodium"], dishes_col.dishes[dessert_ID].dish_json["sodium"]])
+            sugar = sum([dishes_col.dishes[starter_ID].dish_json["sugar"] ,dishes_col.dishes[main_ID].dish_json["sugar"], dishes_col.dishes[dessert_ID].dish_json["sugar"]])
             self.meals[meal_id] = {"name" : meal_name,
+                            "ID": meal_id,
                             "appetizer" : starter_ID,
                             "main" : main_ID,
-                            "dessert" : dessert_ID
+                            "dessert" : dessert_ID, 
+                            "cal" : cal ,
+                            "sodium" : sodium,
+                            "sugar" : sugar
                             }
             return meal_id, 200
             
@@ -189,11 +203,19 @@ class dishes(Resource):
     global meals_col
 
     def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('Content-Type', location='headers')
+        args_1 = parser.parse_args()
+        content_type = args_1.get('Content-Type')
+        if content_type != 'application/json':
+            return 0, 415
+
+
         api_url = 'https://api.api-ninjas.com/v1/nutrition?query={}'.format(dishes_col.id_num)
         response = requests.get(api_url, headers={'X-Api-Key': 'JTNwmSBjEi97fQhVG0cWuQ==FgDuQk8zsrFueEyU'})
         if (response.headers.get('content-type') != 'application/json'):
             return 0, 415
-        parser = reqparse.RequestParser()
+        
         parser.add_argument('name', location='json', required = False)
         args = parser.parse_args()
         if args["name"] == None:
@@ -211,11 +233,19 @@ class meals(Resource):
     global meals_col
 
     def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('Content-Type', location='headers')
+        args_1 = parser.parse_args()
+        content_type = args_1.get('Content-Type')
+        if content_type != 'application/json':
+            return 0, 415
+
+
+
         api_url = 'https://api.api-ninjas.com/v1/nutrition?query={}'.format(dishes_col.id_num)
         response = requests.get(api_url, headers={'X-Api-Key': 'JTNwmSBjEi97fQhVG0cWuQ==FgDuQk8zsrFueEyU'})
         if (response.headers.get('content-type') != 'application/json'):
             return 0, 415
-        parser = reqparse.RequestParser()
         parser.add_argument('name', location='json', required=False)
         parser.add_argument('appetizer', location='json', required=False)
         parser.add_argument('main', location='json', required=False)
