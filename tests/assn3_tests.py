@@ -2,117 +2,146 @@ import requests
 import json
 
 
-URL = "http://127.0.0.1:8000"
+class ConnectionController:
+
+    URL = "http://127.0.0.1:8000"
+
+    @staticmethod
+    def http_get(resource: str):
+        response = requests.get(url=f"{ConnectionController.URL}/{resource}", headers={"Content-Type": "application/json"})
+        return response
+
+    @staticmethod
+    def http_delete(resource: str):
+        response = requests.delete(url=f"{ConnectionController.URL}/{resource}", headers={"Content-Type": "application/json"})
+        return response
+
+    @staticmethod
+    def http_post(resource: str, data: {}):
+        response = requests.post(url=f"{ConnectionController.URL}/{resource}", headers={"Content-Type": "application/json"},
+                                 data=json.dumps(data))
+        return response
+
+    @staticmethod
+    def http_put(resource: str, data: {}):
+        response = requests.put(url=f"{ConnectionController.URL}/{resource}", headers={"Content-Type": "application/json"},
+                                data=json.dumps(data))
+        return response
+
+    @staticmethod
+    def post_raw(resource: str, data: {}, headers: {}):
+        response = requests.post(url=f"{ConnectionController.URL}/{resource}", headers=headers, data=json.dumps(data))
+        return response
+
+    @staticmethod
+    def add_dish(name: str) -> int:
+        dish = {"name": name}
+        response = ConnectionController.http_post("dishes", dish)
+        Assertion.assert_valid_added_resource(response)
+        return response.json()
+
+    @staticmethod
+    def add_meal(name: str, appetizer_id: int, main_id: int, dessert_id: int) -> int:
+        meal = {
+            "name": name,
+            "appetizer": appetizer_id,
+            "main": main_id,
+            "dessert": dessert_id
+        }
+        response = ConnectionController.http_post("meals", meal)
+        Assertion.assert_valid_added_resource(response)
+        assert response.json() > 0
+        return response.json()
 
 
-##test 1 
-##Execute three POST /dishes requests using the dishes, “orange”, “spaghetti”, and “apple pie”. 
-##The test is successful* if (i) all 3 requests return unique IDs (none of the IDs are the same),
-##and (ii) the return status code from each POST request is 201.
-def test_post_3_dishes():
-    headers = {"content-type":"application/json"}
+class Assertion:
 
-    payload_1 = json.dumps({"name": "orange"})
-    payload_2 = json.dumps({"name": "spaghetti"})
-    payload_3 = json.dumps({"name": "apple pie"})
+    @staticmethod
+    def assert_ret_value(response: requests.Response, returned_value: any):
+        assert response.json() == returned_value
 
-    response_1 = requests.request("POST", URL+"/dishes", headers=headers, data=payload_1)
-    response_2 = requests.request("POST", URL+"/dishes", headers=headers, data=payload_2)
-    response_3 = requests.request("POST", URL+"/dishes", headers=headers, data=payload_3)
+    @staticmethod
+    def assert_err_code(response: requests.Response, error_code: int):
+        assert response.status_code == error_code
 
-    check_1 = ((response_1.json() != response_2.json()) and (response_1.json() != response_3.json()) and (response_2.json() != response_3.json()))
-    check_2 = (response_1.status_code == response_2.status_code == response_3.status_code == 201)
-
-    assert (check_1 and check_2) == True
+    @staticmethod
+    def assert_valid_added_resource(response: requests.Response):
+        assert response.status_code == 201
 
 
-##test 2
-##Execute a GET dishes/<orange-ID> request, using the ID of the orange dish. 
-##The test is successful if (i) the sodium field of the return JSON object is between .9 and 1.1 
-##and (ii) the return status code from the request is 200.
-
-def test_get_dishes_on_id():
-    headers = {"content-type":"application/json"}
-    payload = json.dumps({})
-    response = requests.request("GET", URL+"/dishes/" + "1", headers=headers, data=payload)
-
-    assert (0.9 < response.json()["sodium"] < 1.1)
-
-##test3
-##Execute a GET /dishes request. The test is successful if (i) the returned JSON object has 3 embedded JSON objects (dishes), 
-##and (ii) the return status code from the GET request is 200.
-
-def test_get_dishes():
-    payload =json.dumps({})
-    headers = {'Content-Type': 'application/json'}
-    response = requests.request("GET", URL+"/dishes" ,headers=headers, data=payload)
-    num_keys = len(response.json().keys())
-    assert ((num_keys == 3) and (response.status_code == 200))
+orange_dish_id: int = None
+spaghetti_dish_id: int = None
+apple_pie_dish_id: int = None
 
 
-##test 4
-##Execute a POST /dishes request supplying the dish name “blah”. The test is successful if 
-##(i) the return value is -3, and (ii) the return code is 404 or 400 or 422.
-
-def test_post_bad_dish():
-    headers = {"content-type":"application/json"}
-    payload = json.dumps({"name": "blah"})
-    response = requests.request("POST", URL+"/dishes", headers=headers, data=payload)
-
-    assert (response.text.rstrip('\n') == "-3") and (response.status_code == 404 or response.status_code == 400 or response.status_code == 422) 
+def test_1():
+    global orange_dish_id, apple_pie_dish_id, spaghetti_dish_id
+    orange_dish_id = ConnectionController.add_dish("orange")
+    spaghetti_dish_id = ConnectionController.add_dish("spaghetti")
+    apple_pie_dish_id = ConnectionController.add_dish("apple pie")
+    assert orange_dish_id != spaghetti_dish_id
+    assert orange_dish_id != apple_pie_dish_id
+    assert spaghetti_dish_id != apple_pie_dish_id
 
 
-##test 5
-##Perform a POST dishes request with the dish name “orange”. 
-##The test is successful if (i) the return value is -2 (same dish name as existing dish), and
-##(ii) the return status code is 400 or 404 or 422
+def test_2():
+    global orange_dish_id
+    assert orange_dish_id is not None
 
-def test_post_orange():
-    headers = {"content-type":"application/json"}
-    payload = json.dumps({"name": "orange"})
-    response = requests.request("POST", URL+"/dishes", headers=headers, data=payload)
+    response = ConnectionController.http_get(f"dishes/{orange_dish_id}")
+    Assertion.assert_err_code(response, error_code=200)
 
-    assert (response.text.rstrip('\n') == "-2" and (response.status_code == 404 or response.status_code == 400 or response.status_code == 422))
+    orange_sodium = response.json()["sodium"]
+    assert 0.9 <= orange_sodium <= 1.1
 
 
-##test 6
-##Perform a POST /meals request specifying that the meal name is “delicious”,
-##and that it contains an “orange” for the appetizer, “spaghetti” for the main, and “apple pie” for the dessert 
-##(note you will need to use their dish IDs). The test is
-##successful if (i) the returned ID > 0 and (ii) the return status code is 201.
+def test_3():
+    response = ConnectionController.http_get("dishes")
+    Assertion.assert_err_code(response, error_code=200)
 
-def test_post_meal():
-    headers = {"content-type":"application/json"}
-    payload = json.dumps({"name": "delicious", "appetizer": 1, "main": 2, "dessert": 3})
-    response = requests.request("POST", URL+"/meals", headers=headers, data=payload)
+    dishes = response.json()
+    assert len(dishes) == 3
 
-    assert ((int(response.text) > 0) and (response.status_code == 201))
-    
 
-##test 7
-##Perform a GET /meals request. The test is successful if (i) the returned JSON object has 1 meal, 
-##(ii) the calories of that meal is between 400 and 500, and (iii)
-##the return status code from the GET request is 200.
+def test_4():
+    INVALID_DISH = {"name": "blah"}
+    response = ConnectionController.http_post("dishes", INVALID_DISH)
+    Assertion.assert_ret_value(response, -3)
+    assert response.status_code == 404 or response.status_code == 400 or response.status_code == 422
 
-def test_get_meals():
-    headers = {"content-type":"application/json"}
-    payload = json.dumps({})
-    response = requests.request("GET", URL+"/meals", headers=headers, data=payload)
 
-    num_keys = len(response.json().keys())
-    assert ((num_keys == 1) and ( 400 < response.json()["1"]["cal"] < 500) and (response.status_code == 200))
+def test_5():
+    DISH_NAME = "orange"
+    response = ConnectionController.http_post("dishes", {"name": DISH_NAME})
+    Assertion.assert_ret_value(response, -2)
+    assert response.status_code == 404 or response.status_code == 400 or response.status_code == 422
 
-##test 8
-##Perform a POST /meals request as in test 6 with the same meal name (and courses can be the same or different). 
-##The test is successful if (i) the code is -2
-##(same meal name as existing meal) and, and (ii) the return status code from the
-##request is 400 or 422.
 
-def test_post_same_meal():
-    headers = {"content-type":"application/json"}
-    payload = json.dumps({"name": "delicious", "appetizer": 1, "main": 2, "dessert": 3})
-    response = requests.request("POST", URL+"/meals", headers=headers, data=payload)
+def test_6():
+    global orange_dish_id, apple_pie_dish_id, spaghetti_dish_id
+    assert orange_dish_id is not None
+    assert apple_pie_dish_id is not None
+    assert spaghetti_dish_id is not None
 
-    assert ((int(response.text) == -2) and (response.status_code == 400 or response.status_code == 422))
+    ConnectionController.add_meal("delicious", orange_dish_id, spaghetti_dish_id, apple_pie_dish_id)
 
-    
+
+def test_7():
+    response = ConnectionController.http_get("meals")
+    Assertion.assert_err_code(response, error_code=200)
+    meals = response.json()
+    assert len(meals) == 1
+
+    for key in meals:
+        assert 400 <= meals[key]["cal"] <= 500
+
+
+def test_8():
+    global orange_dish_id, apple_pie_dish_id, spaghetti_dish_id
+    assert orange_dish_id is not None
+    assert apple_pie_dish_id is not None
+    assert spaghetti_dish_id is not None
+    meal = {"name": "delicious", "appetizer": orange_dish_id, "main": spaghetti_dish_id, "dessert": apple_pie_dish_id}
+    response = ConnectionController.http_post("meals", meal)
+    Assertion.assert_ret_value(response, returned_value=-2)
+    assert response.status_code == 400 or response.status_code == 422
